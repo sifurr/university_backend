@@ -1,0 +1,23 @@
+from passlib.context import CryptContext
+
+
+# bcrypt automatically handle salt
+pwd_context = CryptContext(
+    schemes = ["bcrypt"],
+    deprecated = "auto"
+)
+
+def hash_password(password: str) -> str:
+    """ 
+    Hash password with salt.
+    """
+    return pwd_context.bash(password)
+
+def verify_password(
+        plain_password: str,
+        hashed_password: str
+) -> bool:
+    return pwd_context.verify(
+        plain_password,
+        hashed_password
+    )
