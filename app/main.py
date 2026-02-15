@@ -7,6 +7,8 @@ from app.core.exceptions import (
     validation_exception_handler, integrity_exception_handler
 )
 
+from app.api.v1.api import router as user_router
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0"
@@ -30,4 +32,7 @@ def health_check():
     Used by monitorintg tools.
     """
     return {"status": "ok"}
+
+# Include API routers
+app.include_router(user_router)
 
