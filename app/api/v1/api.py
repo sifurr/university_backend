@@ -1,21 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter
 
-from app.schemas.user import UserCreate, UserResponse
-from app.services.user_service import UserService
-from app.core.database import get_db
+from app.api.v1.auth import router as auth_router
+from app.api.v1.users import router as user_router
 
+router = APIRouter(prefix="/api/v1")
 
-router = APIRouter(prefix="/users", tags=["Users"])
-
-
-@router.post(
-    "",
-    response_model=UserResponse
-)
-
-def create_user(payload: UserCreate, db: Session = Depends(get_db)):
-    try:
-        return UserService.create_user(db, payload)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+router.include_router(auth_router)
+router.include_router(user_router)
