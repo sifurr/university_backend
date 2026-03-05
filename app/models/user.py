@@ -25,10 +25,8 @@ class User(BaseModel):
     full_name = Column(String(100), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(
-        Enum(UserRole),
-        default=UserRole.STUDENT,
-        nullable=False
-    )
+    role = Column(Enum(UserRole), default=UserRole.STUDENT, nullable=False)
     is_verified = Column(Boolean, default=False)
-    
+
+     
+

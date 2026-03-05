@@ -1,8 +1,8 @@
 from pydantic import BaseModel, EmailStr
-from enum import Enum
+import enum 
 
 
-class UserRoleEnum(str, Enum):
+class UserRoleEnum(str, enum.Enum):
     admin = "admin"
     faculty = "faculty"
     student = "student"
@@ -15,7 +15,7 @@ class UserCreate(BaseModel):
     full_name: str
     email: EmailStr
     password: str
-    role: UserRoleEnum | None = None
+    role: UserRoleEnum | None = None 
 
 
 class UserResponse(BaseModel):

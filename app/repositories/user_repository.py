@@ -8,14 +8,8 @@ class UserRepository:
     """
 
     @staticmethod
-    def get_by_email(db: Session, email: str):
-        
-        return(
-            db.query(User).filter(
-                User.email == email,
-                User.is_active == True
-            ).first()
-        )
+    def get_by_email(db: Session, email: str):        
+        return(db.query(User).filter(User.email == email, User.is_active == True).first())
     
     @staticmethod
     def create(db: Session, user: User):
@@ -23,4 +17,4 @@ class UserRepository:
         db.flush() # assign ID without commit
         return user
     
-    
+  
