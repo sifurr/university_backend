@@ -18,7 +18,7 @@ class EnrollmentService:
         if existing:
             raise HTTPException(
                 status_code=400,
-                detail="Student already enrolled in this course"
+                detail="Student already enrolled in this course!"
             )
 
         enrollment = Enrollment(
