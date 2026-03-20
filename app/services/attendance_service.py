@@ -49,3 +49,23 @@ class AttendanceService:
     @staticmethod
     def get_student_attendance(db: Session, student_id: int):
         return AttendanceRepository.get_student_attendance(db, student_id)
+    
+
+    @staticmethod
+    def get_attendance_percentage(db, student_id: int, course_id: int):
+
+        total, present = AttendanceRepository.get_attendance_summary(
+            db, student_id, course_id
+        )
+
+        if total == 0:
+            return 0
+
+        try:
+            if total is not 0:
+                percentage = (present / total) * 100
+        except ZeroDivisionError:
+            print("Student has not any attendance record")
+
+
+        return round(percentage, 2)
