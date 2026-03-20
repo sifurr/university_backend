@@ -10,11 +10,16 @@ from app.core.config import settings
 from app.core.exceptions import (
     validation_exception_handler, integrity_exception_handler
 )
+from app.core.exceptions import (
+    BadRequestException,
+    bad_request_exception_handler
+)
 
 from app.api.v1.api import router as api_router
 
 from app.middlewares.monitoring_middleware import monitoring_middleware
-from app.api.metrices import router as metrics_router
+from app.api.metrics import router as metrics_router
+
 
 
 setup_logging()
@@ -44,11 +49,16 @@ app.add_exception_handler(
     integrity_exception_handler
 )
 
+app.add_exception_handler(
+    BadRequestException,
+    bad_request_exception_handler
+)
+
 
 @app.get("/health")
 def health_check():
     """
-    Used by monitorintg tools.
+    Used by monitoring tools.
     """
     return {
         "status": "ok", 

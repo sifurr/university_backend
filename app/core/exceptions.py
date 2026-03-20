@@ -4,6 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from sqlalchemy.exc import IntegrityError
 
 
+
 def error_response(message: str, status_code: int):
     """
     Standard API error response format
@@ -26,5 +27,19 @@ async def integrity_exception_handler(
         request: Request,
         exc: IntegrityError
 ):
-    return error_response("Database intregrity violation", 400)
+    return error_response("Database integrity violation", 400)
+
+class BadRequestException(Exception):
+    
+    def __init__(self, message: str):
+        self.message = message
+
+def bad_request_exception_handler(request: Request, exc: BadRequestException):
+    return JSONResponse(
+        status_code=400,
+        content={
+            "success": False,
+            "message": exc.message
+        }
+    )
 
