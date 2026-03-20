@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from app.models.base import Base
+from app.models.base import BaseModel
 
 
-class Enrollment(Base):
+class Enrollment(BaseModel):
     __tablename__ = "enrollments"
 
     id = Column(Integer, primary_key=True, index=True)

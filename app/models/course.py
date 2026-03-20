@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.models.base import Base
+from app.models.base import BaseModel
 
 
-class Course(Base):
+class Course(BaseModel):
     __tablename__ = "courses"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -13,4 +13,3 @@ class Course(Base):
     description = Column(String, nullable=True)
     faculty_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     faculty = relationship("User")
-

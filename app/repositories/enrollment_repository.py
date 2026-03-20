@@ -8,8 +8,9 @@ class EnrollmentRepository:
     def create(db: Session, enrollment: Enrollment):
 
         db.add(enrollment)
-        db.commit()
-        db.refresh(enrollment)
+        db.flush() # commit na, only db a push
+        # db.commit()
+        # db.refresh(enrollment)
 
         return enrollment
     

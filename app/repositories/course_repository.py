@@ -23,3 +23,14 @@ class CourseRepository:
         return db.query(Course).filter(Course.id == course_id).first()
     
     
+    @staticmethod
+    def get_for_update(db: Session, course_id: int):
+
+        return (
+            db.query(Course)
+            .filter(Course.id == course_id)
+            .with_for_update()
+            .first()
+        )
+    
+    

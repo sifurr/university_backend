@@ -1,5 +1,8 @@
 from sqlalchemy import Column, Boolean, DateTime, func
 from app.core.database import Base
+# from app.models.course import Course
+# from app.models.enrollment import Enrollment
+# from app.models.attendance import Attendance
 
 
 class BaseModel(Base):
