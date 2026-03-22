@@ -36,13 +36,34 @@ class AttendanceRepository:
         total = db.query(func.count(Attendance.id)).filter(
             Attendance.student_id == student_id,
             Attendance.course_id == course_id
-        ).scalar()
+        ).scalar() or 0
 
         present = db.query(func.count(Attendance.id)).filter(
             Attendance.student_id == student_id,
             Attendance.course_id == course_id,
             Attendance.status == AttendanceStatus.PRESENT
-        ).scalar()
+        ).scalar() or 0
+
+        print(f"DEBUG: Student {student_id}, Course {course_id} -> Total: {total}, Present: {present}")
 
         return total, present
+    
+
+    @staticmethod
+    def get_course_attendance_report(db: Session, course_id: int):
+        
+        results = db.query(
+            Attendance.student_id,
+            func.count(Attendance.id).label("total"),
+            func.sum(
+                func.case(
+                    (Attendance.status == AttendanceStatus.PRESENT, 1), 
+                    else_=0
+                )
+            ).label("present")
+        ).filter(
+            Attendance.course_id == course_id
+        ).group_by(Attendance.student_id).all()
+
+        return results
     

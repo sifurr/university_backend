@@ -43,7 +43,7 @@ class AttendanceService:
         
         except Exception as e:
             db.rollback()
-            raise f"Error: {e}"
+            raise e
         
     
     @staticmethod
@@ -58,14 +58,47 @@ class AttendanceService:
             db, student_id, course_id
         )
 
-        if total == 0:
+        if total == 0:            
             return 0
 
-        try:
-            if total is not 0:
-                percentage = (present / total) * 100
-        except ZeroDivisionError:
-            print("Student has not any attendance record")
-
-
+        percentage = (present / total) * 100
+        
         return round(percentage, 2)
+
+    
+    @staticmethod
+    def get_course_report(db, course_id: int):
+
+        data = AttendanceRepository.get_course_attendance_report(db, course_id)
+
+        report = []
+
+        for row in data:
+            percentage = (row.present / row.total) * 100 if row.total else 0
+
+            report.append({
+                "student_id": row.student_id,
+                "attendance_percentage" : round(percentage, 2)
+            })
+    
+        return report
+    
+
+    @staticmethod
+    def teacher_dashboard(db, teacher_id: int):
+        total_students = db.query(Attendance.student_id).distinct().count()
+
+        total_classes = db.query(Attendance.date).distinct().count()
+
+        total_present = db.query(Attendance).filter(
+            Attendance.status == AttendanceStatus.PRESENT
+        ).count()
+
+        return {
+            "total_status": total_students,
+            "total_classes": total_classes,
+            "total_present_records": total_present
+        }
+
+
+        
