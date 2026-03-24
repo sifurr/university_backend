@@ -1,16 +1,25 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 from sqlalchemy.exc import IntegrityError
 
 from app.models.attendance import Attendance, AttendanceStatus
 from app.repositories.attendance_repository import AttendanceRepository
 from app.schemas.attendance import AttendanceCreate
 
+from app.utils.email import send_email
+from app.repositories.user_repository import UserRepository
+
+
 
 class AttendanceService:
     
     @staticmethod
-    def mark_attendance(db: Session, payload: AttendanceCreate):
+    def mark_attendance(
+        db: Session, 
+        payload: AttendanceCreate,
+        background_tasks: BackgroundTasks = None
+        ):
+
         try:
             existing = AttendanceRepository.get_by_unique_key(
                 db,
@@ -32,8 +41,21 @@ class AttendanceService:
                 status=AttendanceStatus(payload.status)
             )
 
-            return AttendanceRepository.create(db, attendance)
+            result = AttendanceRepository.create(db, attendance)
 
+            if payload.status == "absent" and background_tasks:
+
+                student = UserRepository.get_by_id(db, payload.student_id)
+
+                if student and student.email:
+                    background_tasks.add_task(
+                        send_email,
+                        student.email, 
+                        "Attendance Alert",
+                        f"You were marked absent on {payload.date}"
+                    )
+            return result
+        
         except IntegrityError:
             db.rollback()
             raise HTTPException(

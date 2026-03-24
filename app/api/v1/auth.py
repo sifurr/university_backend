@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from app.schemas.auth import LoginRequest, TokenResponse
@@ -8,8 +8,7 @@ from app.core.database import get_db
 
 from app.api.deps import get_current_user
 from app.core.security import hash_password, verify_password
-from app.schemas.password import ChangePasswordRequest
-
+from app.schemas.password import ChangePasswordRequest, ForgotPasswordRequest
 
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -34,6 +33,13 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         return tokens
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
-    
-    
-    
+
+@router.post("/forgot-password")
+def forgot_password(
+    payload: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    AuthService.send_reset_email(db, payload.email, background_tasks)
+
+    return {"message": "If the email exists, a reset link has been set"}
