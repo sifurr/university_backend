@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: university_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  
+  redis:
+    image: redis:7
+    container_name: redis_server
+    restart: always
+    ports:
+      - "6380:6379"
+
+  
+  app:
+    build: .
+    container_name: fastapi_app
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8001:8000"
+    environment:
+      DATABASE_URL:  postgresql://postgres:password@postgres:5432/university_db
+
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus_server
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+    ports:
+      - "9091:9090"
+    depends_on:
+      - app
+    
+  grafana:
+    image: grafana/grafana
+    container_name: grafana_server
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+
+
+volumes:
+  postgres_data: 
+
+
+      

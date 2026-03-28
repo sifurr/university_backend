@@ -5,8 +5,11 @@ from app.core.jwt import (
     create_access_token,
     create_refresh_token
 )
+from fastapi import BackgroundTasks
 
 import logging
+
+from app.utils.email import send_email
 
 
 security_logger = logging.getLogger("security")
@@ -50,3 +53,29 @@ class AuthService():
             "access_token": create_access_token(payload),
             "refresh_token": create_refresh_token(payload)
         }
+    
+
+    @staticmethod
+    def generate_reset_token(email: str):
+        payload = {"email": email}
+
+        return create_access_token(payload)
+    
+
+    @staticmethod
+    def send_reset_email(db: Session, email: str, background_tasks: BackgroundTasks):
+        user = UserRepository.get_by_email(db, email)
+
+        if not user:
+            return # security: don't reveal existence
+        
+        token = AuthService.generate_reset_token(email)
+
+        reset_link = f"http://localhost:8000/reset-password?token={token}"
+
+        background_tasks.add_task(
+            send_email,
+            email,
+            "Password Reset",
+            f"Click here to reset your password:\n{reset_link}"
+        )

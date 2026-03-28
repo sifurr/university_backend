@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -15,10 +15,11 @@ router = APIRouter(prefix="/attendance", tags=["Attendance"])
 @router.post("/mark")
 def mark_attendance(
     payload: AttendanceCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     user = Depends(require_role(['faculty']))
 ):
-    return AttendanceService.mark_attendance(db, payload)
+    return AttendanceService.mark_attendance(db, payload, background_tasks)
 
 
 # Student views own attendance

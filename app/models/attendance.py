@@ -5,8 +5,8 @@ from app.models.base import BaseModel
 
 
 class AttendanceStatus(enum.Enum):
-    PRESENT = "present"
-    ABSENT = "absent"
+    PRESENT = "PRESENT"
+    ABSENT = "ABSENT"
 
 class Attendance(BaseModel):
     __tablename__ = "attendances"

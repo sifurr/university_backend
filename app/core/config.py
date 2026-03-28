@@ -15,8 +15,15 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_TOKEN_EXPIRE_DAYs: int
 
-    class Config:
+    # EMAIL Config
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str
+    MAIL_PORT: int
+    MAIL_SERVER: str
+    MAIL_TLS: bool
 
+    class Config:
         env_file = ".env"
 
 
@@ -26,3 +33,4 @@ def get_settings():
     return Settings()
 
 settings = get_settings()
+
